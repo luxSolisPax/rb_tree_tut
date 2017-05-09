@@ -5,9 +5,12 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "rb_tree.h"
 
-struct rb_tree_node_t *create_node(int value, struct rb_tree_node_t *left, struct rb_tree_node_t *right){
+
+
+struct rb_tree_node_t *create_node(void *value, struct rb_tree_node_t *left, struct rb_tree_node_t *right){
     struct rb_tree_node_t *new_node = (struct rb_tree_node_t *) malloc(sizeof(struct rb_tree_node_t));
     new_node->value = value;
     new_node->left = left;
@@ -16,16 +19,29 @@ struct rb_tree_node_t *create_node(int value, struct rb_tree_node_t *left, struc
     return new_node;
 }
 
-struct rb_tree_t *rb_new(){
+struct rb_tree_t *rb_new(enum compare_result (*compare_value)(void*, void*)){
     struct rb_tree_t *ret = (struct rb_tree_t *) malloc(sizeof(struct rb_tree_t));
     ret->root = NULL;
     ret->size = 0;
+    ret->rb_comparison_function = compare_value;
     return ret;
 }
 
 
+void iterate_subtree(struct rb_tree_node_t* node, void (*fn)(void*)){
+    if(node != NULL){
+        iterate_subtree(node->left, fn);
+        fn(node->value);
+        iterate_subtree(node->right, fn);
+    }
+}
 
-bool rb_search(struct rb_tree_t *tree, int value){
+void iterate_tree(struct rb_tree_t* tree, void (*fn)(void*)){
+    iterate_subtree(tree->root, fn);
+}
+
+
+bool rb_search(struct rb_tree_t *tree, void *value){
     struct rb_tree_node_t *search_node = tree->root;
     while(search_node != NULL){
         if(value < search_node->value) {
@@ -47,23 +63,39 @@ bool is_red(struct rb_tree_node_t *node){
     } else {
         return false;
     }
-    
+
 }
 
-void rb_insert(struct rb_tree_t *tree, int value){
-    tree->root = insert_helper(tree->root, value);
+void rb_insert(struct rb_tree_t *tree, void *value){
+    tree->root = insert_helper(tree->root, value, tree->rb_comparison_function);
 }
 
-struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, int value){
+//todo: comparison function implementation
+//make the tree unique (set property)
+//allow whatever data type (rather a pointer) to be inserted with user defined comparision
+//allow itteration over the tree in-order
+//create a map interface that *uses* the rb_tree interface to provide:
+ //get(key) -> value
+ //put(key, value)
+ //remove(key)
+ //keys(map) -> list(keys)
+ //values(map) -> list(values)
+
+
+
+//inserts a new node into tree; disallows duplicate values
+struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, void *value, enum compare_result (*compare_value)(void*, void*)){
     if(node == NULL){
         return create_node(value, NULL, NULL);
     }
-    if(value < node->value){
-        node->left = insert_helper(node->left, value);
-    } else if (value > node->value){
-        node->right = insert_helper(node->right, value);
+
+    if(compare_value(value, node->value) == LESS_THAN){
+        node->left = insert_helper(node->left, value, compare_value);
+    } else if (compare_value(value, node->value) == GREATER_THAN){
+        node->right = insert_helper(node->right, value, compare_value);
     }
-    
+    //if equal, do nothing
+
     if(is_red(node->right) && !is_red(node->left)) {
         node = rotate_left(node);
     }
@@ -73,6 +105,7 @@ struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, int value){
     if (is_red(node->left) && is_red(node->right)) {
         flip_colors(node);
     }
+    
     return node;
 }
 
