@@ -29,7 +29,8 @@ void print_tree(struct rb_tree_t *tree){
 void subtree_print(struct rb_tree_node_t *n){
     if(n != NULL){
         subtree_print(n->left);
-        printf(n->value);
+        printf("%p: ", n->key);
+        printf("%p\n", n->value);
         subtree_print(n->right);
     }
 }
@@ -47,6 +48,11 @@ enum compare_result compare_value(void *left, void *right){
 
 void print_string(void *str){
     printf("value: %s\n", (char*) str);
+}
+
+void print_node(rb_tree_node_t *n) {
+    printf("%p: ", n->key);
+    printf("%p\n", n->value);
 }
 
 int main(int argc, char** argv) {
