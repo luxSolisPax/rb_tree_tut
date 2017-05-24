@@ -63,6 +63,9 @@ void rb_insert(struct rb_tree_t*, void *key, void *value);
 
 struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, void *key, void *value, enum compare_result (*compare_value)(void*, void*));
 
+
+
+
 //if the value exists in the tree, deletes that value from the tree
 
 
@@ -82,6 +85,8 @@ struct rb_tree_node_t *rotate_right(struct rb_tree_node_t *base);
 void flip_colos(struct rb_tree_node_t *node);
 
 //key, value functions
+
+//returns the value of the element found in key
 void *rb_get(struct rb_tree_t*, void *key);
 
 void rb_put(struct rb_tree_t*, void *key, void *value);

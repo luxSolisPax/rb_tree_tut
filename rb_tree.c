@@ -71,29 +71,16 @@ void rb_insert(struct rb_tree_t *tree, void *key, void *value){
     tree->root = insert_helper(tree->root, key, value, tree->rb_comparison_function);
 }
 
-//todo: comparison function implementation
-//make the tree unique (set property)
-//allow whatever data type (rather a pointer) to be inserted with user defined comparision
-//allow itteration over the tree in-order
-//create a map interface that *uses* the rb_tree interface to provide:
- //get(key) -> value
- //put(key, value)
- //remove(key)
- //keys(map) -> list(keys)
- //values(map) -> list(values)
-
-
-
 //inserts a new node into tree; disallows duplicate values
 struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, void *key, void *value, enum compare_result (*compare_value)(void*, void*)){
     if(node == NULL){
         return create_node(key, value, NULL, NULL);
     }
 
-    if(compare_value(value, node->key) == LESS_THAN){
-        node->left = insert_helper(node->left, value, compare_value);
-    } else if (compare_value(value, node->key) == GREATER_THAN){
-        node->right = insert_helper(node->right, value, compare_value);
+    if(compare_value(key, node->key) == LESS_THAN){
+        node->left = insert_helper(node->left, key, value, compare_value);
+    } else if (compare_value(key, node->key) == GREATER_THAN){
+        node->right = insert_helper(node->right, key, value, compare_value);
     }
     //if equal, do nothing
 
@@ -139,3 +126,31 @@ void flip_colors(struct rb_tree_node_t *node){
         node->right->color = false;
     }
 }
+
+void *rb_get(struct rb_tree_t *tree, void *key){
+    struct rb_tree_node_t *node = tree->root;
+    while (node != NULL){
+        if(compare_value(key, node->key) == LESS_THAN) {
+            node = node->left;
+        }
+        if(compare_value(key, node->key) == GREATER_THAN) {
+            node = node->right;
+        }
+        if(compare_value(key, node->key) == EQUAL_TO){
+            return node->value;
+        }
+    }
+    return false;
+}
+
+//todo: comparison function implementation
+//make the tree unique (set property)
+//allow whatever data type (rather a pointer) to be inserted with user defined comparision
+//allow itteration over the tree in-order
+//create a map interface that *uses* the rb_tree interface to provide:
+ //get(key) -> value
+ //put(key, value)
+ //remove(key)
+ //keys(map) -> list(keys)
+ //values(map) -> list(values)
+

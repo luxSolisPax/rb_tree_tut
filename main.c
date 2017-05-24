@@ -46,27 +46,32 @@ enum compare_result compare_value(void *left, void *right){
     }
 }
 
-void print_string(void *str){
+void print_string_nl(void *str){
     printf("value: %s\n", (char*) str);
 }
 
-void print_node(rb_tree_node_t *n) {
-    printf("%p: ", n->key);
-    printf("%p\n", n->value);
+void print_string(void *str){
+    printf("value: %s; ", (char*) str);
+}
+
+void print_node(struct rb_tree_node_t *n) {
+    printf("key: %s; ", (char*) n->key);
+    printf("value: %d\n", (int) n->value);
 }
 
 int main(int argc, char** argv) {
     struct rb_tree_t *t = rb_new(compare_value);
-    rb_insert(t, "peas");
-    rb_insert(t, "squash");
-    rb_insert(t, "lettuce");
-    rb_insert(t, "carrot");
-    rb_insert(t, "potato");
-    rb_insert(t, "yam");
-    rb_insert(t, "Celery");
+    rb_insert(t, "peas", 1);
+    rb_insert(t, "squash", 2);
+    rb_insert(t, "lettuce", 3);
+    rb_insert(t, "carrot", 4);
+    rb_insert(t, "potato", 5);
+    rb_insert(t, "yam", 6);
+    rb_insert(t, "Celery", 7);
 
-    iterate_tree(t, print_string);
-    printf(t->root->value);
+    iterate_tree(t, print_node);
+    printf("value: %d\n", (int) rb_get(t, "Celery"));
+    //printf(t->root->value);
 
     return 0;
 }
