@@ -8,6 +8,13 @@
 #include <string.h>
 #include "rb_tree.h"
 
+//todo:
+
+ //put(key, value)
+ //remove(key)
+ //keys(map) -> list(keys)
+ //values(map) -> list(values)
+
 
 
 struct rb_tree_node_t *create_node(void *key, void *value, struct rb_tree_node_t *left, struct rb_tree_node_t *right){
@@ -143,14 +150,19 @@ void *rb_get(struct rb_tree_t *tree, void *key){
     return false;
 }
 
-//todo: comparison function implementation
-//make the tree unique (set property)
-//allow whatever data type (rather a pointer) to be inserted with user defined comparision
-//allow itteration over the tree in-order
-//create a map interface that *uses* the rb_tree interface to provide:
- //get(key) -> value
- //put(key, value)
- //remove(key)
- //keys(map) -> list(keys)
- //values(map) -> list(values)
-
+bool rb_put(struct rb_tree_t *tree, void *key, void *val) {
+    struct rb_tree_node_t *node = tree->root;
+    while (node != NULL) {
+        if (compare_value(key, node->key) == LESS_THAN) {
+            node = node->left;
+        }
+        if (compare_value(key, node->key) == GREATER_THAN) {
+            node = node->right;
+        }
+        if (compare_value(key, node->key) == EQUAL_TO) {
+            node->value = val;
+            return true;
+        }
+    }
+    return false;
+}

@@ -89,6 +89,7 @@ void flip_colos(struct rb_tree_node_t *node);
 //returns the value of the element found in key
 void *rb_get(struct rb_tree_t*, void *key);
 
+//if key exists, change value associated with key
 void rb_put(struct rb_tree_t*, void *key, void *value);
 
 void rb_delete(struct rb_tree_t*, void *key);
