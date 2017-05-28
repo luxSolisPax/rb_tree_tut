@@ -11,19 +11,20 @@
 //todo:
 
  //put(key, value)
- //remove(key)
+ //delete(key)
  //keys(map) -> list(keys)
  //values(map) -> list(values)
 
 
 
-struct rb_tree_node_t *create_node(void *key, void *value, struct rb_tree_node_t *left, struct rb_tree_node_t *right){
+struct rb_tree_node_t *create_node(void *key, void *value, struct rb_tree_node_t *left, struct rb_tree_node_t *right, struct rb_tree_t *tree){
     struct rb_tree_node_t *new_node = (struct rb_tree_node_t *) malloc(sizeof(struct rb_tree_node_t));
     new_node->key = key;
     new_node->value = value;
     new_node->left = left;
     new_node->right = right;
     new_node->color = true;
+    tree->size++;
     return new_node;
 }
 
@@ -75,13 +76,13 @@ bool is_red(struct rb_tree_node_t *node){
 }
 
 void rb_insert(struct rb_tree_t *tree, void *key, void *value){
-    tree->root = insert_helper(tree->root, key, value, tree->rb_comparison_function);
+    tree->root = insert_helper(tree->root, key, value, tree->rb_comparison_function, tree);
 }
 
 //inserts a new node into tree; disallows duplicate values
-struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, void *key, void *value, enum compare_result (*compare_value)(void*, void*)){
+struct rb_tree_node_t *insert_helper(struct rb_tree_node_t *node, void *key, void *value, enum compare_result (*compare_value)(void*, void*), struct rb_tree_t *tree){
     if(node == NULL){
-        return create_node(key, value, NULL, NULL);
+        return create_node(key, value, NULL, NULL, tree);
     }
 
     if(compare_value(key, node->key) == LESS_THAN){
@@ -165,4 +166,49 @@ bool rb_put(struct rb_tree_t *tree, void *key, void *val) {
         }
     }
     return false;
+}
+
+//todo:
+
+ //put(key, value)
+ //delete(key)
+ //keys(map) -> list(keys)
+ //values(map) -> list(values)
+
+bool rb_delete(struct rb_tree_t *tree, void *key) {
+    //how should I merge the children of a deleted node?
+}
+
+void *keys(struct rb_tree_t *tree){
+    void retArray[tree->size] = {};
+    struct rb_tree_node_t *node = tree->root;
+    int counter = 0;
+    keyHelper(node, retArray, counter);
+    return retArray;
+}
+
+void keyHelper(struct rb_tree_node_t *node, void *array, int counter){
+    if(node != NULL) {
+        keyHelper(node->left, array, counter);
+        array[counter] = node->key;
+        counter++;
+        keyHelper(node->right, array, counter);
+    }
+}
+
+void *values(struct rb_tree_t *tree){
+    void retArray[tree->size] = {};
+    struct rb_tree_node_t *node = tree->root;
+    int counter = 0;
+    valueHelper(node, retArray, counter);
+    return retArray;
+}
+
+void valueHelper(struct rb_tree_node_t *node, void *array, int counter){
+    if(node != NULL) {
+        keyHelper(node->left, array, counter);
+        array[counter] = node->value;
+        counter++;
+        keyHelper(node->right, array, counter);
+    }
 }

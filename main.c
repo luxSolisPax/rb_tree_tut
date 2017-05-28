@@ -73,5 +73,11 @@ int main(int argc, char** argv) {
     printf("value: %d\n", (int) rb_get(t, "Celery"));
     //printf(t->root->value);
 
+    void test[t->size] = keys(t);
+    
+    for(int i=0; i<t->size; i++){
+        print_string_nl(testArray[i]);
+    }
+    
     return 0;
 }
